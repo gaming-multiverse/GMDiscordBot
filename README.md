@@ -11,7 +11,7 @@ If you have any questions or need help, feel free to open an issue on GitHub or 
 ## Features
 
 - **Welcome Messages**: Send a random catchy message once a user joins the discord.
-- **Ticket System**: An advanded yet simple ticketing system with logs using sqlite3.
+- **Ticket System**: An advanded yet simple ticketing system with logs using mysql.
 
 ## Installation
 
