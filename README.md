@@ -42,6 +42,12 @@ If you have any questions or need help, feel free to open an issue on GitHub or 
       DISCORD_TOKEN=Bot_Token_Here
       CLIENT_ID=Application_Id_Here
       GUILD_ID=Guild_Id_Here
+
+      DB_HOST=localhost
+      DB_PORT=3306
+      DB_USER=your_db_user
+      DB_PASSWORD=your_db_password
+      DB_NAME=gmbot
      ```
    - Also edit the `config.json` to customize the bot.
 
