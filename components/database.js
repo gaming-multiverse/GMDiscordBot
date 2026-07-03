@@ -1,32 +1,64 @@
-const sqlite3 = require('sqlite3').verbose();
+require('dotenv').config();
+const mysql = require('mysql2');
 
-const db = new sqlite3.Database('./tickets.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
-    if (err) {
-        console.error('Error opening database', err.message);
-    } else {
-        db.run(`CREATE TABLE IF NOT EXISTS embed_status (channel_id TEXT PRIMARY KEY, embed_created BOOLEAN DEFAULT 0)`);
-        db.run(`CREATE TABLE IF NOT EXISTS tickets (user_id TEXT PRIMARY KEY, ticket_count INTEGER DEFAULT 0)`);
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+});
+
+pool.query(
+    `CREATE TABLE IF NOT EXISTS embed_status (channel_id VARCHAR(255) PRIMARY KEY, embed_created BOOLEAN DEFAULT 0, message_id VARCHAR(255))`,
+    (err) => {
+        if (err) console.error('Error creating embed_status table', err.message);
+    }
+);
+
+// Add message_id to tables created before this column existed. Ignore the
+// duplicate-column error when it's already present.
+pool.query(`ALTER TABLE embed_status ADD COLUMN message_id VARCHAR(255)`, (err) => {
+    if (err && err.code !== 'ER_DUP_FIELDNAME') {
+        console.error('Error adding message_id column', err.message);
     }
 });
 
+pool.query(
+    `CREATE TABLE IF NOT EXISTS tickets (user_id VARCHAR(255) PRIMARY KEY, ticket_count INT DEFAULT 0)`,
+    (err) => {
+        if (err) console.error('Error creating tickets table', err.message);
+    }
+);
+
 function getEmbedStatus(channelId, callback) {
-    db.get(`SELECT embed_created FROM embed_status WHERE channel_id = ?`, [channelId], callback);
+    pool.query(`SELECT embed_created, message_id FROM embed_status WHERE channel_id = ?`, [channelId], (err, rows) => {
+        callback(err, rows && rows[0]);
+    });
 }
 
-function setEmbedStatus(channelId) {
-    db.run(`INSERT INTO embed_status (channel_id, embed_created) VALUES (?, 1) ON CONFLICT(channel_id) DO UPDATE SET embed_created = 1`, [channelId]);
+function setEmbedStatus(channelId, messageId) {
+    pool.query(
+        `INSERT INTO embed_status (channel_id, embed_created, message_id) VALUES (?, 1, ?) ON DUPLICATE KEY UPDATE embed_created = 1, message_id = VALUES(message_id)`,
+        [channelId, messageId]
+    );
 }
 
 function getTicketCount(userId, callback) {
-    db.get(`SELECT ticket_count FROM tickets WHERE user_id = ?`, [userId], callback);
+    pool.query(`SELECT ticket_count FROM tickets WHERE user_id = ?`, [userId], (err, rows) => {
+        callback(err, rows && rows[0]);
+    });
 }
 
 function incrementTicketCount(userId) {
-    db.run(`INSERT INTO tickets (user_id, ticket_count) VALUES (?, 1) ON CONFLICT(user_id) DO UPDATE SET ticket_count = ticket_count + 1`, [userId]);
+    pool.query(`INSERT INTO tickets (user_id, ticket_count) VALUES (?, 1) ON DUPLICATE KEY UPDATE ticket_count = ticket_count + 1`, [userId]);
 }
 
 function resetTicketCount(userId) {
-    db.run(`UPDATE tickets SET ticket_count = 0 WHERE user_id = ?`, [userId]);
+    pool.query(`UPDATE tickets SET ticket_count = 0 WHERE user_id = ?`, [userId]);
 }
 
 module.exports = {

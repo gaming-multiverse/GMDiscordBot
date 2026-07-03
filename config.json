@@ -9,6 +9,14 @@
         "support": "Support_Channel_Id_Here",
         "sales": "Sales_Channel_Id_Here"
     },
+    "pingRoleIds": {
+        "support": [
+            "Staff_Roles_Id_Here"
+        ],
+        "sales": [
+            "Staff_Roles_Id_Here"
+        ]
+    },
     "welcomeMessages": [
         "Welcome, ${member}! We're so glad to have you as part of our community!",
         "Hey ${member}, great to see you here! We're excited to have you join us!",
@@ -18,8 +26,24 @@
         "Glad you're here, ${member}! Our community is a friendly place where everyone is welcome.",
         "Welcome aboard, ${member}! We hope you enjoy your time here with us!",
         "Hello, ${member}! We're thrilled to have you as part of our community!",
-        "Hey ${member}, welcome! We’re all about good vibes and great people here.",
-        "Welcome, ${member}! Looking forward to all the good times we'll share together!"
-    ]
+        "Hey ${member}, welcome! We're all about good vibes and great people here.",
+        "Welcome, ${member}! Looking forward to all the good times we'll share together!",
+        "A wild ${member} appeared! Welcome to the crew make yourself at home.",
+        "The doors just opened for ${member}! So happy to have you here.",
+        "Everyone say hi to ${member}! 👋 Welcome aboard the adventure.",
+        "Fresh face alert! Welcome ${member}, you're going to fit right in.",
+        "${member} just joined the party! Grab a seat and enjoy your stay.",
+        "Big welcome to ${member}! Our community just got a little brighter.",
+        "Look who made it. Welcome ${member}! We've been expecting you.",
+        "Welcome ${member}! Dive in, say hello, and don't be shy.",
+        "So glad you found us, ${member}! Welcome to the family.",
+        "New legend unlocked: ${member}! Welcome, we're pumped you're here."
+    ],
+    "welcomeCard": {
+        "title": "Welcome to the server!",
+        "footer": "Gaming Multiverse Community",
+        "description": "",
+        "showMemberCount": true,
+        "showAccountAge": true
+    }
 }
-  
